@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập Hiến pháp & Hệ thống Chính trị</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+        .question-card {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1.05rem;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+            border: 1px solid transparent;
+        }
+        .option-item:hover {
+            background: #f0f7ff;
+            border-color: #d6eaf8;
+        }
+        .option-item input {
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        #btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        #btn-submit:hover {
+            background: #2980b9;
+        }
+        #result-area {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            font-size: 1.2rem;
+        }
+        .correct-bg { background-color: #e8f8f5 !important; border-color: #a3e4d7 !important; }
+        .wrong-bg { background-color: #fdedec !important; border-color: #f5b7b1 !important; }
+        .correct-text { color: var(--success-color); font-weight: bold; }
+        .wrong-text { color: var(--error-color); font-weight: bold; }
+        .correct-answer-hint {
+            font-size: 0.95em;
+            color: var(--success-color);
+            margin-top: 10px;
+            display: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Trắc Nghiệm Giáo Dục Kinh Tế & Pháp Luật 10</h1>
+    <div id="quiz-container">
+        </div>
+    
+    <button id="btn-submit" onclick="checkQuiz()">Nộp bài và Chấm điểm</button>
+    <div id="result-area"></div>
+</div>
+
+<script>
+    const quizData = [
+        { q: "Hệ thống các quy phạm pháp luật có hiệu lực pháp lý cao nhất, quy định về những vấn đề cơ bản nhất về chủ quyền quốc gia, chế độ chính trị, chính sách kinh tế, văn hóa xã hội, tổ chức quyền lực nhà nước, địa vị pháp lí của con người và công dân là", options: ["Hiến pháp.", "Luật giáo dục.", "Luật kinh tế.", "Luật hôn nhân gia đình."], correct: 0 },
+        { q: "Đạo luật cơ bản của nước Cộng hòa xã hội chủ nghĩa Việt Nam, có hiệu lực pháp lí cao nhất, do Quốc hội ban hành để quy định những vấn đề quan trọng của đất nước là", options: ["Luật lao động.", "Luật dân sự.", "Luật an ninh quốc gia.", "Hiến pháp."], correct: 3 },
+        { q: "Văn bản quy phạm pháp luật nào có hiệu lực pháp lí cao nhất trong hệ thống văn bản quy phạm pháp luật ở nước ta?", options: ["Nghị quyết.", "Hiến pháp.", "Quyết định.", "Pháp lệnh."], correct: 1 },
+        { q: "Ở nước ta, việc soạn thảo, thông qua Hiến pháp, sửa đổi Hiến pháp và thủ tục, trình tự giải thích Hiến pháp do cơ quan nào quy định?", options: ["Chính phủ.", "Tòa án nhân dân tối cao.", "Quốc hội.", "Viện Kiểm sát nhân dân tối cao."], correct: 2 },
+        { q: "Hiến pháp mới nhất của nước Cộng hòa xã hội chủ nghĩa Việt Nam là Hiến pháp năm", options: ["1993.", "1983.", "2003.", "2013."], correct: 3 },
+        { q: "Từ khi thành lập nước Việt Nam dân chủ cộng hòa đến nay, nước ta đã có bao nhiêu bản Hiến pháp?", options: ["05.", "06.", "04.", "03."], correct: 0 },
+        { q: "Nhà nước phải ban hành Hiến pháp để", options: ["chấm dứt các hành vi vi phạm pháp luật, ổn định trận tự xã hội.", "giáo dục ý thức tôn trọng pháp luật cho người dân.", "quy định những vấn đề cơ bản, quan trọng nhất của Nhà nước và xã hội.", "Tuyên truyền, phổ biến giáo dục pháp luật cho nhân dân."], correct: 2 },
+        { q: "Khi ban hành luật trẻ em 2016, Quốc hội phải căn cứ vào nội dung của Hiến pháp 2013 vì", options: ["Hiến pháp quy định những vấn đề quan trọng của xã hội.", "Hiến pháp là Luật nguồn, nền tảng cho các văn bản luật khác.", "Hiến pháp quy định về tổ chức quyền lực nhà nước.", "đó là đối tượng điều chỉnh của Hiến pháp"], correct: 1 },
+        { q: "Hiến pháp 2013 quy định về chủ quyền và lãnh thổ của nước Cộng hòa xã hội chủ nghĩa Việt Nam bao gồm", options: ["đất liền, vùng trời và vùng biển, dưới lòng đất.", "đất liền, dưới lòng đất, và hải đảo, không gian.", "đất liền, vùng biển và hải đảo, không gian.", "đất liền, vùng trời, vùng biển và hải đảo."], correct: 3 },
+        { q: "…. của Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được Hiến pháp xác định là nhà nước pháp quyền xã hội chủ nghĩa của nhân dân, do nhân dân, vì nhân dân.", options: ["Tính chất.", "Bản chất.", "Đặc trưng", "Đặc điểm"], correct: 1 },
+        { q: "“Đường lối đối ngoại của nước ta tạo điều kiện để phát triển đất nước và nâng cao chất lượng, phát triển đời sống xã hội một cách toàn diện” là", options: ["ý nghĩa của chính sách đối ngoại.", "tính chất của chính sách đối ngoại.", "bản chất của chính sách đối ngoại.", "nội dung của chính sách đối ngoại."], correct: 3 },
+        { q: "Hiến pháp 2013 có quy định về.…vì đây là một trong những nội dung cơ bản, quan trọng gắn liền với chế độ chính trị của đất nước. Đồng thời, đây cũng là những nội dung thể hiện biểu tượng của mỗi quốc gia trên thế giới.", options: ["Quốc kỳ, Quốc huy, Quốc ca và Quốc khánh.", "Quốc kỳ, Quốc huy, Quốc ca, Quốc khánh và Thủ đô.", "Quốc kỳ, Quốc ca, Quốc khánh và thủ đô.", "Quốc kỳ, Quốc huy, Quốc ca và Thủ đô."], correct: 1 },
+        { q: "… là lĩnh vực có tầm quan trọng, quyết định sự tồn tại và phát triển của một quốc gia.", options: ["Hoạt động kinh tế.", "Chế độ chính trị.", "Văn hóa xã hội.", "Văn hóa – giáo dục."], correct: 0 },
+        { q: "Nhân dân thông qua các cơ quan nhà nước, các cá nhân được nhân dân ủy quyền để thực hiện ý chí nhân dân; là phương thức chủ yếu để thực hiện quyền lực nhân dân là hình thức dân chủ", options: ["đại diện.", "trực tiếp.", "tập trung.", "thống nhất."], correct: 0 },
+        { q: "Trong lúc dọn dẹp vệ sinh ven đường, cô T phát hiện bé sơ sinh bị bỏ rơi, cô đã đưa em đến bệnh viện kiểm tra sức khỏe và tiến hành làm các thủ tục nhân nuôi... Vậy, cô T đã đảm bảo quyền gì cho em bé?", options: ["Quyền sống, được chăm sóc sức khỏe.", "Quyền có nơi ở hợp pháp.", "Quyền không bị phân biệt đối xử.", "Quyền được nuôi dưỡng."], correct: 0 },
+        { q: "Phát hiện H đang đi trên đường sau nhiều ngày trốn tránh về khoản nợ, N đã dung vũ lực bắt H về nhà mình nhốt lại và yêu cầu người nhà mang tiền đến trả... N đã xâm phạm đến …. của H.", options: ["quyền bất khả xâm phạm về thân thể.", "quyền bất khả xâm phạm về đời sống riêng tư.", "quyền được bảo hộ về danh dự, nhân phẩm.", "quyền được bảo hộ về tính mạng, sức khỏe."], correct: 0 },
+        { q: "Kết thúc chuyến đi, M đã viết bài chia sẻ những trải nghiệm của mình trên các trang báo mạng và nhận được sự phản hồi tích cực từ người đọc. Vậy, M đã thực hiện quyền", options: ["quyền tự do ngôn luận.", "quyền tham gia quản lí nhà nước và xã hội.", "quyền được tự do đi lại.", "quyền tự do tiếp cận thông tin."], correct: 0 },
+        { q: "Nội dung về kinh tế được quy định tại các Điều từ 50 đến 56 của Hiến pháp năm 2013. Theo đó, nền kinh tế Việt Nam là nền kinh tế thị trường", options: ["theo hướng tư bản chủ nghĩa.", "coi trọng phát triển nông nghiệp.", "gắn với hội nhập quốc tế.", "định hướng xã hội chủ nghĩa."], correct: 3 },
+        { q: "Theo quy định của Hiến pháp năm 2013, nền kinh tế Việt Nam là nền kinh tế thị trường định hướng xã hội chủ nghĩa với nhiều hình thức sở hữu, nhiều thành phần kinh tế,", options: ["kinh tế tư nhân giữ vai trò chủ đạo.", "kinh tế nhà nước giữ vai trò chủ đạo.", "kinh tế tập thể giữ vai trò chủ đạo.", "kinh tế tư bản nhà nước là chủ đạo."], correct: 1 },
+        { q: "Theo quy định của Hiến pháp năm 2013, các chủ thể thuộc các thành phần kinh tế hoạt động theo pháp luật, bình đẳng trước pháp luật, hợp tác và", options: ["cạnh tranh gay gắt.", "chia nhau lợi ích.", "cạnh tranh lành mạnh.", "mở rộng thị trường."], correct: 2 },
+        { q: "Theo quy định của Hiến pháp năm 2013, Đất đai, tài nguyên nước, khoáng sản, nguồn lợi ở vùng biển, vùng trời….và các tài sản do Nhà nước đầu tư, quản lí là", options: ["tài sản công thuộc sở hữu toàn dân.", "tài sản công được khai thác tự do.", "tài sản của dân, do dân khai phá.", "tài sản công và chia đều cho nhân dân."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp về vai trò, trách nhiệm của Nhà nước và xã hội trong các lĩnh vực văn hóa, xã hội là luôn tạo sự bình đẳng về cơ hội để công dân", options: ["được làm việc theo sở thích.", "đóng góp thu nhập cho xã hội.", "thụ hưởng phúc lợi xã hội.", "làm chủ cuộc sống của mình."], correct: 2 },
+        { q: "Theo quy định của Hiến pháp năm 2013 ở Điều 60 về vai trò, trách nhiệm của Nhà nước và xã hội trong lĩnh vực văn hóa là luôn chăm lo xây dựng và phát triển nền văn hóa Việt Nam", options: ["tiên tiến, đậm đà bản sắc dân tộc.", "tiến bộ để hội nhập với thế giới.", "theo mô hình của các nước tư bản.", "phát huy bản sắc văn hóa dân tộc."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp năm 2013 ở Điều 60 về vai trò, trách nhiệm của Nhà nước và xã hội đối với lĩnh vực xã hội là", options: ["xây dựng nền văn hóa tiên tiến.", "gìn giữ các giá trị văn hóa dân tộc.", "phát huy các truyền thống văn hóa.", "tạo việc làm cho người lao động."], correct: 3 },
+        { q: "Điều 61 Hiến pháp năm 2013 quy định: Phát triển giáo dục là quốc sách hàng đầu nhằm nâng cao dân trí, phát triển nguồn nhân lực và", options: ["bồi dưỡng nhân tài cho đất nước.", "hội nhập với nền kinh tế thế giới.", "tập trung phát triển kinh tế tri thức.", "đào tạo đội ngũ các nhà khoa học."], correct: 0 },
+        { q: "Điều 62 Hiến pháp năm 2013 khẳng định: Phát triển khoa học và công nghệ là quốc sách hàng đầu. Nhà nước bảo đảm quyền nghiên cứu khoa học và công nghệ; bảo hộ", options: ["quyền tự do kinh doanh.", "quyền sở hữu trí tuệ.", "quyền tự do học tập.", "quyền sở hữu tài sản."], correct: 1 },
+        { q: "Tổ chức quyền lực chính trị của xã hội có giai cấp, có lãnh thổ, dân cư và chính quyền độc lập, có khả năng đặt ra và thực thi pháp luật nhằm thiết lập trật tự xã hội nhất định trong phạm vi lãnh thổ của mình được gọi là", options: ["Quốc hội.", "Nhà nước.", "Chính phủ.", "Mặt trận tổ quốc Việt Nam."], correct: 1 },
+        { q: "Để thực hiện chức năng quản lí nhà nước và xã hội, Nhà nước ta đã thiết lập bộ máy nhà nước từ", options: ["trung ương đến địa phương.", "trung ương đến cấp tỉnh.", "trung ương đến cấp huyện.", "tỉnh đến các xã, phường."], correct: 0 },
+        { q: "Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được tổ chức phân cấp phù hợp với các đơn vị hành chính đất nước và gồm 3 nhóm cơ quan tạo thành là", options: ["cơ quan lập pháp, hành pháp, tư pháp.", "cơ quan lập pháp, lập hiến, tư pháp.", "cơ quan lập pháp, hành pháp, cơ quan ngang bộ.", "Quốc hội, Chính phủ và Ủy ban nhân dân."], correct: 0 },
+        { q: "Trong bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam, cơ quan nào sau đây là cơ quan đại biểu của nhân dân?", options: ["Quốc hội và Ủy ban nhân dân.", "Quốc hội và Chính phủ.", "Quốc hội và Mặt trận tổ quốc.", "Quốc hội và Hội đồng nhân dân."], correct: 3 },
+        { q: "Tòa án nhân dân giữ vai trò gì trong bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam?", options: ["Cơ quan xét xử, thực hiện quyền tư pháp.", "Cơ quan lập pháp, thực hiện quyền xét xử.", "Cơ quan tư pháp, thực hiện quyền công tố.", "Cơ quan xét xử, thực hiện quyền hành pháp."], correct: 0 },
+        { q: "Người đứng đầu Nhà nước, thay mặt nước Cộng hòa xã hội chủ nghĩa việt Nam về đối nội và đối ngoại là", options: ["Chủ tịch quốc hội.", "Thủ tướng chính phủ.", "Chủ tịch hội đồng nhân dân.", "Chủ tịch nước."], correct: 3 },
+        { q: "Theo quy định tại Điều 107 của Hiến pháp. Viện kiểm sát nhân dân là cơ quan thực hành quyền công tố và", options: ["điều tra trấn áp tội phạm.", "kiểm sát hoạt động tư pháp.", "xét xử các vụ án hình sự.", "giám sát hoạt động của Chính phủ."], correct: 1 },
+        { q: "Theo quy định của Hiến pháp năm 2013, Tổng Kiểm toán nhà nước chịu trách nhiệm và báo cáo kết quả kiểm toán, báo cáo công tác trước cơ quan nào?", options: ["Quốc hội.", "Chính phủ.", "Chủ tịch nước.", "Tổng Bí thư."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp năm 2013, Tổng Kiểm toán nhà nước chịu trách nhiệm và báo cáo công tác trước Quốc hội, trong thời gian Quốc hội không họp thì chịu trách nhiệm và báo cáo trước cơ quan nào sau đây?", options: ["Ủy ban thường vụ Quốc hội.", "Viện kiểm sát nhân dân tối cao.", "Bộ và cơ quan ngang bộ.", "Văn phòng chính phủ."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp năm 2013, Chủ tịch nước được bầu ra từ đâu?", options: ["Trong số đại biểu Hội đồng nhân dân.", "Trong các Bộ và cơ quan ngang bộ.", "Trong các tổ chức Đảng.", "Trong số đại biểu Quốc hội."], correct: 3 },
+        { q: "Theo quy định của Hiến pháp năm 2013, bằng các hoạt động của mình, cơ quan nào sau đây đã đảm bảo pháp luật được thực thi nghiêm chỉnh, bảo vệ quyền con người và bảo vệ lợi ích hợp pháp của cá nhân, nhà nước và xã hội?", options: ["Hội đồng nhân dân.", "Viện kiểm sát nhân dân.", "Bộ và cơ quan ngang bộ.", "Tòa án nhân dân."], correct: 3 },
+        { q: "Nhiệm vụ và quyền hạn của Quốc hội được quy định rất cụ thể trong Hiến pháp năm 2013, bao gồm những nhiệm vụ nào sau đây?", options: ["Làm Hiến pháp và sửa đổi Hiến pháp.", "Kí kết hợp tác kinh tế với nước ngoài.", "Phê duyệt các văn bản của Chính phủ.", "Điều hành hoạt động của các địa phương."], correct: 0 },
+        { q: "Cơ quan quyền lực nhà nước cao nhất trong tổ chức bộ máy của nước cộng hòa xã hội chủ nghĩa Việt Nam là cơ quan nào dưới đây?", options: ["Chính phủ.", "Bộ chính trị.", "Quốc hội.", "Mặt trận tổ quốc."], correct: 2 },
+        { q: "Quyền con người, quyền và nghĩa vụ cơ bản của công dân được Nhà nước quy định ở đâu?", options: ["Chỉ thị, thông tư.", "Hiến pháp, luật pháp.", "Quyết định, chính sách.", "Nghị quyết, văn bản."], correct: 1 },
+        { q: "Hệ thống chính trị Việt Nam gồm nhiều cơ quan, tổ chức cấu thành và được liên kết chặt chẽ với nhau thành một chỉnh thể thống nhất nhằm thực thi", options: ["quyền lực của nhà nước đối với nhân dân.", "quyền lực của giai cấp này với giai cấp khác.", "quyền làm chủ của nhân dân đối với đất nước.", "quyền lực của Đảng đối với toàn dân tộc."], correct: 2 },
+        { q: "Trong hệ thống chính trị Việt Nam, tổ chức đóng vai trò cầm quyền, lãnh đạo Nhà nước và xã hội là", options: ["Quốc hội và Hội đồng nhân dân.", "Mặt trận tổ quốc Việt Nam.", "các tổ chức chính trị - xã hội.", "Đảng Cộng sản Việt Nam."], correct: 3 },
+        { q: "Nhà nước cộng hòa xã hội chủ nghĩa Việt Nam là công cụ tổ chức thực hiện ý chí và quyền lực của nhân dân, thay mặt nhân dân, chịu trách nhiệm trước nhân dân để quản lí", options: ["toàn bộ hoạt động của đời sống xã hội.", "cán bộ và công nhân viên chức nhà nước.", "hoạt động của các thành phần kinh tế.", "việc khai thác và bảo vệ tài nguyên."], correct: 0 },
+        { q: "Mặt trận tổ quốc Việt Nam và các tổ chức chính trị - xã hội là các cơ quan, tổ chức đại diện, bảo vệ quyền và lợi ích hợp pháp, chính đáng của nhân dân, chăm lo lợi ích chính đáng của", options: ["đội ngũ cán bộ công chức.", "những người dân tộc thiểu số.", "các đoàn viên và hội viên.", "những gia đình chính sách."], correct: 2 },
+        { q: "Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là", options: ["quyền lực cao nhất thuộc về Chủ tịch nước.", "đảm bảo quyền lực của Đảng trong thực tiễn.", "quyền lực nhà nước thuộc về nhân dân.", "quyền lực cao nhất thuộc về Thủ tướng."], correct: 2 },
+        { q: "Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là", options: ["đảm bảo sự lãnh đạo của Đảng.", "quyền lực thuộc về Chủ tịch nước.", "đảm bảo quyền lực của Đảng.", "quyền lực thuộc về Thủ tướng."], correct: 0 },
+        { q: "Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là", options: ["lấy dân làm gốc.", "đoàn kết dân tộc.", "mở rộng đối ngoại.", "tập trung dân chủ."], correct: 3 },
+        { q: "Nguyên tắc hiến định trong tổ chức và hoạt động của bộ máy nhà nước Việt Nam là", options: ["đảm bảo sự lãnh đạo của Đảng.", "đảm bảo sự lãnh đạo của Nhà nước.", "đảm bảo sự lãnh đạo của Quốc hội.", "đảm bảo sự lãnh đạo của Chính phủ."], correct: 0 },
+        { q: "Tính thống nhất của quyền lực nhà nước Việt Nam được xác định bởi chính chủ thể duy nhất và tối cao của quyền lực là", options: ["Chính phủ.", "giai cấp cầm quyền.", "nhân dân.", "giai cấp thống trị."], correct: 2 },
+        { q: "Quyền lực nhà nước được phân chia thành quyền", options: ["lập pháp, hành pháp, tư pháp.", "lập pháp, hành pháp, hiến pháp.", "lập pháp, tư pháp, hiến pháp.", "tư pháp, hành pháp, hiến pháp."], correct: 0 },
+        { q: "Nguyên tắc nào khẳng định nhân dân Việt Nam là người lập ra Nhà nước?", options: ["Quyền lực nhà nước thuộc về nhân dân.", "Tập trung dân chủ.", "Đảm bảo sự lãnh đạo của Đảng.", "Pháp chế xã hội chủ nghĩa."], correct: 0 },
+        { q: "Nhà nước Công hòa xã hội chủ nghĩa Việt Nam quản lí xã hội bằng", options: ["quyền lực của nhà nước.", "Hiến pháp và pháp luật.", "cơ cấu tổ chức bộ máy.", "lực lượng quân đội, công an."], correct: 1 },
+        { q: "Một trong những đặc điểm của bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam là", options: ["tính toàn dân.", "tính quyền lực.", "tính giai cấp.", "tính dân chủ."], correct: 1 },
+        { q: "Một trong những đặc điểm của bộ máy nhà nước Công hòa xã hội chủ nghĩa Việt Nam là", options: ["tính nhân dân.", "tính công bằng.", "tính toàn dân.", "tính dân chủ."], correct: 0 },
+        { q: "Nội dung nào dưới đây không phải là đặc điểm của bộ máy nhà nước Công hòa xã hội chủ nghĩa Việt Nam?", options: ["Tính thống nhất.", "Tính dân chủ.", "Tính quyền lực.", "Tính nhân dân."], correct: 2 },
+        { q: "Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được tổ chức và hoạt động trong sự phối kết hợp giữa các yếu tố", options: ["dân chủ và tập trung.", "dân chủ và đại diện.", "dân chủ và trực tiếp.", "dân chủ và công khai."], correct: 0 },
+        { q: "Hệ thống các cơ quan trong bộ máy nhà nước được sắp xếp, tổ chức thống nhất từ", options: ["trung ương xuống địa phương.", "trung ương xuống cấp tỉnh.", "trung ương xuống cấp huyện.", "trung ương xuống xã, phường."], correct: 0 },
+        { q: "Hệ thống các cơ quan trong bộ máy nhà nước được sắp xếp, tổ chức thống nhất từ trung ương xuống địa phương và đều chịu sự lãnh đạo của", options: ["Chính phủ và Đảng ủy các cấp.", "Mặt trận tổ quốc Việt Nam.", "Đảng Cộng sản Việt Nam.", "Ủy ban nhân dân các cấp."], correct: 2 },
+        { q: "Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam do", options: ["nhân dân thành lập.", "nhà nước thành lập.", "Đảng cộng sản thành lập.", "giai cấp công nhân thành lập."], correct: 0 },
+        { q: "Mọi hoạt động của các cơ quan, cán bộ, công chức, viên chức trong bộ máy nhà nước chịu sự", options: ["kiểm tra, giám sát của Đảng.", "kiểm tra, giám sát của nhân dân.", "kiểm tra, giám sát của Chính phủ.", "kiểm tra, giám sát của Ủy ban nhân dân."], correct: 1 },
+        { q: "Hội đồng nhân dân là", options: ["cơ quan quyền lực nhà nước ở địa phương.", "cơ quan lãnh đạo ở địa phương.", "cơ quan hành chính ở địa phương.", "cơ quan giám sát ở địa phương."], correct: 0 },
+        { q: "Hội đồng nhân dân được thành lập thông qua", options: ["bầu cử, ứng cử.", "mệnh lệnh cấp trên.", "phân bổ quyền lực.", "đặc trưng vùng miền."], correct: 0 },
+        { q: "Hội đồng nhân dân là cơ quan quyền lực nhà nước ở địa phương chịu trách nhiệm trước nhân dân địa phương và", options: ["lãnh đạo địa phương.", "cơ quan cấp trên.", "người đứng đầu địa phương.", "đoàn thể ở địa phương"], correct: 1 },
+        { q: "Hội đồng nhân dân địa phương không có thẩm quyền quyết định vấn đề nào dưới đây của địa phương?", options: ["Giám sát tối cao hoạt động của Quốc hội.", "Giám sát hoạt động của Ủy ban nhân dân.", "Giám sát hoạt động của cơ quan hành chính.", "Giám sát vấn về an sinh xã hội tại địa bàn."], correct: 0 },
+        { q: "Hình thức quan trọng nhất trong hoạt động của Hội đồng nhân dân là", options: ["Kỳ họp.", "Đại hội.", "Phong trào.", "Kế hoạch."], correct: 0 },
+        { q: "Cơ quan hành chính nhà nước ở địa phương là", options: ["Hội đồng nhân dân.", "Ủy ban nhân dân.", "Mặt trận tổ quốc.", "Tòa án nhân dân."], correct: 1 },
+        { q: "Theo Luật tổ chức chính quyền địa phương, cơ quan có chức năng tổ chức việc thi hành Hiến pháp và pháp luật ở địa phương là", options: ["Viện kiểm sát nhân dân.", "Tòa án nhân dân.", "Ủy Ban nhân dân.", "Hội đồng nhân dân."], correct: 2 },
+        { q: "Theo Luật tổ chức chính quyền địa phương, Ủy ban nhân dân chịu trách nhiệm trước hội đồng nhân dân cùng cấp và cơ quan hành chính", options: ["cùng cấp.", "cấp trên.", "cấp dưới.", "đồng cấp."], correct: 1 },
+        { q: "Theo Luật tổ chức chính quyền địa phương, người đứng đầu Ủy ban nhân dân được gọi là", options: ["Bí thư.", "Chủ tịch.", "Chánh án.", "Viện trưởng."], correct: 1 },
+        { q: "Uỷ ban nhân dân có chức năng:", options: ["Quyết định các vấn đề của địa phương do luật định.", "Tổ chức thực hiện nghị quyết của Hội đồng nhân dân.", "Giám sát việc tuân theo Hiến pháp và pháp luật ở địa phương.", "Giám sát việc thực hiện nghị quyết của Hội đồng nhân dân."], correct: 1 },
+        { q: "Cơ cấu tổ chức UBND bao gồm những bộ phận nào?", options: ["Chủ tịch, phó chủ tịch, các ủy viên phụ trách chuyên môn.", "Chủ tịch, phó chủ tịch.", "Các ủy viên phụ trách cơ quan chuyên môn.", "Ủy viên phụ trách công an, ủy viên phụ trách quân sự."], correct: 0 },
+        { q: "Mọi người đều bình đẳng trước pháp luật, không ai bị phân biệt đối xử trong đời sống chính trị, dân sự, kinh tế, văn hóa xã hội là nội dung cơ bản của Hiến pháp 2013 về", options: ["quyền con người.", "nghĩa vụ công dân.", "trách nhiệm pháp lý.", "chế độ chính trị."], correct: 0 },
+        { q: "Công dân được tham gia bầu cử và ứng cử vào Quốc hội là thực hiện tốt quyền con người trên lĩnh vực nào dưới đây?", options: ["Chính trị.", "Kinh tế.", "Văn hóa.", "Xã hội."], correct: 0 },
+        { q: "Theo quy định của pháp luật, mọi công dân nếu đủ điều kiện đều được tham quản lý nhà nước và xã hội là góp phần thực hiện tốt quyền con người trên lĩnh vực", options: ["Chính trị.", "Dân sự", "Đối ngoại.", "Xã hội."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp và pháp luật, nội dung nào dưới đây không thể hiện quyền bình đẳng của công dân trên lĩnh vực chính trị?", options: ["ứng cử vào Quốc hội.", "Khiếu nại với cơ quan nhà nước.", "Tham gia quản lý nhà nước ở cơ sở.", "tự do cư trú và đi lại trong nước."], correct: 3 },
+        { q: "Theo quy định của Hiến pháp và pháp luật, nội dung nào dưới đây không thể hiện quyền bình đẳng của công dân trên lĩnh vực chính trị?", options: ["bầu cử Hội đồng nhân dân các cấp.", "Khiếu nại khi quyền lợi bị xâm phạm.", "Tham gia quản lý nhà nước tại địa phương.", "lựa chọn việc làm phù hợp với năng lực."], correct: 3 },
+        { q: "Theo quy định của Hiến pháp 2013, một trong những quyền cơ bản của công dân trên lĩnh vực chính trị là quyền", options: ["biểu quyết khi nhà nước trưng cầu dân ý.", "được đảm bảo an sinh xã hội.", "được làm việc cho bất kỳ ai.", "được sử dụng ngôn ngữ mẹ đẻ."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được", options: ["ứng cử vào Hội đồng nhân dân", "pháp luật bảo hộ về tính mạng.", "bầu cử đại biểu Quốc hội.", "tự do lập hội, tự do đi lại."], correct: 1 },
+        { q: "Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được", options: ["có nơi ở hợp pháp.", "ứng cử đại biểu Quốc hội.", "nghiên cứu khoa học.", "sáng tạo nghệ thuật"], correct: 0 },
+        { q: "Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được", options: ["tự do kinh doanh.", "tự do tín ngưỡng.", "khiếu nại, tố cáo.", "tự do ngôn luận."], correct: 1 },
+        { q: "Theo quy định của pháp luật, quyền bất khả xâm phạm về thân thể của công dân là một trong những nội dung cơ bản của quyền con người trên lĩnh vực", options: ["chính trị.", "kinh tế.", "văn hóa.", "dân sự."], correct: 3 },
+        { q: "Vấn đề nào sau đây được xác định là động lực quan trọng thúc đẩy sự phát triển của đất nước ?", options: ["Quốc phòng và an ninh.", "Khoa học và công nghệ.", "Văn hoá.", "Giáo dục và đào tạo."], correct: 1 },
+        { q: "Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?", options: ["Sử dụng hợp lý tài nguyên", "Tăng cường nhập khẩu phế liệu.", "Chiếm hữu tài nguyên thiên nhiên.", "Mở rộng mô hình du canh du cư."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?", options: ["Bảo tồn đa dạng sinh học.", "Khôi phục làng nghề truyền thống.", "Đốt rừng làm nương rẫy", "Mở rộng việc phủ xanh đồi trọc."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?", options: ["Nâng cao chất lượng môi trường.", "Xả thải trực tiếp ra môi trường.", "Phổ cập mô hình du canh du cư.", "Thu hẹp diện tích rừng để làm thủy điện."], correct: 0 },
+        { q: "Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?", options: ["Áp dụng mô hình đối thoại trực tuyến.", "Chủ động xử lí công tác truyền thông.", "Cần thức đẩy hiện tượng lạm phát.", "Hạn chế sử dụng nhiên liệu hóa thạch."], correct: 3 },
+        { q: "Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?", options: ["Xả thải trực tiếp ra môi trường.", "Phân loại rác thải tại nguồn.", "Buôn bán hàng kém chất lượng.", "Làm giả nhãn hiệu hàng hóa."], correct: 1 },
+        { q: "Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?", options: ["Sử dụng nhiên liệu tái tạo.", "Kế hoạch phản biện xã hội.", "Hưởng trợ cấp thất nghiệp.", "Làm giả hồ sơ bảo hiểm."], correct: 0 }
+    ];
+
+    const quizContainer = document.getElementById('quiz-container');
+
+    // Hàm tạo giao diện hiển thị câu hỏi
+    function displayQuiz() {
+        // Lưu ý: Mảng chỉ có 88 câu do không có câu 71 trong dữ liệu gốc
+        quizData.forEach((item, index) => {
+            // Xử lý số câu hỏi hiển thị cho khớp với đề bài (bỏ qua số 71)
+            let displayNum = index + 1;
+            if (displayNum > 70) displayNum += 1;
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            let optionsHTML = '';
+            item.options.forEach((opt, i) => {
+                optionsHTML += `
+                    <label class="option-item">
+                        <input type="radio" name="q${index}" value="${i}">
+                        ${String.fromCharCode(65 + i)}. ${opt}
+                    </label>
+                `;
+            });
+
+            card.innerHTML = `
+                <span class="question-text">Câu ${displayNum}: ${item.q}</span>
+                <div class="options">${optionsHTML}</div>
+                <div id="ans-hint-${index}" class="correct-answer-hint">Đáp án đúng: ${String.fromCharCode(65 + item.correct)}</div>
+            `;
+            quizContainer.appendChild(card);
+        });
+    }
+
+    // Hàm xử lý khi người dùng ấn nút chấm điểm
+    function checkQuiz() {
+        let score = 0;
+        let unanswered = 0;
+
+        quizData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const hint = document.getElementById(`ans-hint-${index}`);
+            
+            // Xóa class màu sắc cũ (nếu người dùng nộp nhiều lần)
+            const allLabels = document.querySelectorAll(`input[name="q${index}"]`);
+            allLabels.forEach(radio => {
+                radio.parentElement.classList.remove('correct-bg', 'wrong-bg');
+            });
+
+            if (selected) {
+                if (parseInt(selected.value) === item.correct) {
+                    score++;
+                    selected.parentElement.classList.add('correct-bg');
+                } else {
+                    selected.parentElement.classList.add('wrong-bg');
+                }
+            } else {
+                unanswered++;
+            }
+            
+            // Luôn hiển thị đáp án đúng sau khi nộp
+            hint.style.display = 'block';
+        });
+
+        const resultArea = document.getElementById('result-area');
+        resultArea.style.display = 'block';
+        
+        let message = `<h3>Kết quả của bạn: <span class="correct-text">${score}/${quizData.length}</span> câu đúng</h3>
+                       <p>Tỉ lệ chính xác: <strong>${((score/quizData.length)*100).toFixed(2)}%</strong></p>`;
+                       
+        if (unanswered > 0) {
+            message += `<p style="color: var(--error-color); font-size: 0.9em;">Bạn đã bỏ trống ${unanswered} câu.</p>`;
+        }
+        
+        resultArea.innerHTML = message;
+        resultArea.style.backgroundColor = '#e8f4fd';
+        resultArea.style.border = '2px solid var(--secondary-color)';
+        
+        // Tự động cuộn xuống cuối trang để xem điểm
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Render bộ câu hỏi ngay khi load trang
+    window.onload = displayQuiz;
+</script>
+
+</body>
+</html>
