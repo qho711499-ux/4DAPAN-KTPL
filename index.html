@@ -295,6 +295,8 @@
     // Hàm xử lý hiển thị đáp án và trạng thái hoàn thành
     function calculateScore() {
         let answered = 0;
+	let accp = 0 ; 
+	let sai = 0 ;
         const total = questionsData.length;
 
         // Xóa class màu sắc trước đó nếu người dùng nộp nhiều lần
@@ -313,19 +315,22 @@
                 if (userAns === correctAns) {
                     // Trả lời đúng -> Bôi xanh đáp án đã chọn
                     document.getElementById(`label-q${index}-${userAns}`).classList.add('correct-ans');
+		            accp ++ ; 
                 } else {
                     // Trả lời sai -> Bôi đỏ đáp án đã chọn và bôi xanh đáp án đúng
                     document.getElementById(`label-q${index}-${userAns}`).classList.add('wrong-ans');
                     document.getElementById(`label-q${index}-${correctAns}`).classList.add('correct-ans');
+		            sai ++ ; 
                 }
             } else {
                 // Nếu chưa trả lời, hiển thị đáp án đúng luôn
                 document.getElementById(`label-q${index}-${correctAns}`).classList.add('correct-ans');
+	            sai ++ ; 
             }
         });
 
         const resultBox = document.getElementById('result-display');
-        resultBox.innerHTML = `Đã nộp bài! Đã làm: ${answered}/${total} câu`;
+        resultBox.innerHTML = `Đã nộp bài! Đã làm đúng : ${accp}/${total} câu - Số câu làm sai : ${sai} `;
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
