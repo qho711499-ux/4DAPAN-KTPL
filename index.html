@@ -1,0 +1,337 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn tập GDKT & PL 10 - Trắc nghiệm</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --hover-color: #eff6ff;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .question-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #0f172a;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            background-color: #fafafa;
+        }
+        .option-label:hover {
+            background-color: var(--hover-color);
+            border-color: #bfdbfe;
+        }
+        .option-label input[type="radio"] {
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .controls {
+            position: sticky;
+            bottom: 20px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #1d4ed8;
+        }
+        #result-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #047857;
+        }
+        .correct-ans {
+            background-color: #dcfce7 !important;
+            border-color: #4ade80 !important;
+        }
+        .wrong-ans {
+            background-color: #fee2e2 !important;
+            border-color: #f87171 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>ĐỀ CƯƠNG ÔN TẬP HỌC KỲ II - MÔN GDKT&PL 10</h1>
+        <p>Phần 1: Trắc nghiệm 4 phương án lựa chọn</p>
+    </div>
+
+    <form id="quiz-form">
+        <div id="quiz-container"></div>
+    </form>
+
+    <div class="controls">
+        <div id="result-display">Chưa nộp bài</div>
+        <button type="button" class="submit-btn" onclick="calculateScore()">Nộp bài & Xem đáp án</button>
+    </div>
+</div>
+
+<script>
+    const questionsData = [
+        "Câu 1: Hê thống các quy phạm pháp luật có hiệu lực pháp lý cao nhất, quy định về những vấn đề cơ bản nhất về chủ quyền quốc gia, chế độ chính trị, chính sách kinh tế, văn hóa xã hội, tổ chức quyền lực nhà nước, địa vị pháp lí của con người và công dân là|||A. Hiến pháp.|||B. Luật giáo dục.|||C. Luật kinh tế.|||D. Luật hôn nhân gia đình.",
+        "Câu 2: Đạo luật cơ bản của nước Cộng hòa xã hội chủ nghĩa Việt Nam, có hiệu lực pháp lí cao nhất, do Quốc hội ban hành để quy định những vấn đề quan trọng của đất nước là|||A. Luật lao động.|||B. Luật dân sự.|||C. Luật an ninh quốc gia.|||D. Hiến pháp.",
+        "Câu 3: Văn bản quy phạm pháp luật nào có hiệu lực pháp lí cao nhất trong hệ thống văn bản quy phạm pháp luật ở nước ta ?|||A. Nghị quyết.|||B. Hiến pháp.|||C. Quyết định.|||D. Pháp lệnh.",
+        "Câu 4: Ở nước ta, việc soạn thảo, thông qua Hiến pháp, sửa đổi Hiến pháp và thủ tục, trình tự giải thích Hiến pháp do cơ quan nào quy định ?|||A. Chính phủ.|||B. Tòa án nhân dân tối cao.|||C. Quốc hội.|||D. Viện Kiểm sát nhân dân tối cao.",
+        "Câu 5: Hiến pháp mới nhất của nước Cộng hòa xã hội chủ nghĩa Việt Nam là Hiến pháp năm|||A. 1993.|||B. 1983.|||C. 2003.|||D. 2013.",
+        "Câu 6: Từ khi thành lập nước Việt Nam dân chủ cộng hòa đến nay, nước ta đã có bao nhiêu bản Hiến pháp?|||A. 05.|||B. 06.|||C. 04.|||D. 03.",
+        "Câu 7: Nhà nước phải ban hành Hiến pháp để|||A. chấm dứt các hành vi vi phạm pháp luật, ổn định trận tự xã hội.|||B. giáo dục ý thức tôn trọng pháp luật cho người dân.|||C. quy định những vấn đề cơ bản, quan trọng nhất của Nhà nước và xã hội.|||D. Tuyên truyền, phổ biến giáo dục pháp luật cho nhân dân.",
+        "Câu 8: Khi ban hành luật trẻ em 2016, Quốc hội phải căn cứ vào nội dung của Hiến pháp 2013 vì|||A. Hiến pháp quy định những vấn đề quan trọng của xã hội.|||B. Hiến pháp là Luật nguồn, nền tảng cho các văn bản luật khác.|||C. Hiến pháp quy định về tổ chức quyền lực nhà nước.|||D. đó là đối tượng điều chỉnh của Hiến pháp",
+        "Câu 9: Hiến pháp 2013 quy định về chủ quyền và lãnh thổ của nước Cộng hòa xã hội chủ nghĩa Việt Nam bao gồm|||A. đất liền, vùng trời và vùng biển, dưới lòng đất.|||B. đất liền, dưới lòng đất, và hải đảo, không gian.|||C. đất liền, vùng biển và hải đảo, không gian.|||D. đất liền, vùng trời, vùng biển và hải đảo.",
+        "Câu 10: …. của Nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được Hiến pháp xác định là nhà nước pháp quyền xã hội chủ nghĩa của nhân dân, do nhân dân, vì nhân dân.|||A. Tính chất.|||B. Bản chất.|||C. Đặc trưng|||D. Đặc điểm",
+        "Câu 11: “Đường lối đối ngoại của nước ta tạo điều kiện để phát triển đất nước và nâng cao chất lượng, phát triển đời sống xã hội một cách toàn diện” là|||A. ý nghĩa của chính sách đối ngoại.|||B. tính chất của chính sách đối ngoại.|||C. bản chất của chính sách đối ngoại.|||D. nội dung của chính sách đối ngoại.",
+        "Câu 12: Hiến pháp 2013 có quy định về.…vì đây là một trong những nội dung cơ bản, quan trọng gắn liền với chế độ chính trị của đất nước. Đồng thời, đây cũng là những nội dung thể hiện biểu tượng của mỗi quốc gia trên thế giới.|||A. Quốc kỳ, Quốc huy, Quốc ca và Quốc khánh.|||B. Quốc kỳ, Quốc huy, Quốc ca, Quốc khánh và Thủ đô.|||C. Quốc kỳ, Quốc ca, Quốc khánh và thủ đô.|||D. Quốc kỳ, Quốc huy, Quốc ca và Thủ đô.",
+        "Câu 13: … là lĩnh vực có tầm quan trọng, quyết định sự tồn tại và phát triển của một quốc gia.|||A. Hoạt động kinh tế.|||B. Chế độ chính trị.|||C. Văn hóa xã hội.|||D. Văn hóa – giáo dục.",
+        "Câu 14: Nhân dân thông qua các cơ quan nhà nước, các cá nhân được nhân dân ủy quyền để thực hiện ý chí nhân dân; là phương thức chủ yếu để thực hiện quyền lực nhân dân là hình thức dân chủ|||A. đại diện.|||B. trực tiếp.|||C. tập trung.|||D. thống nhất.",
+        "Câu 15: Trong lúc dọn dẹp vệ sinh ven đường, cô T phát hiện bé sơ sinh bị bỏ rơi, cô đã đưua em đến bệnh viện kiểm tra sức khỏe và tiến hành làm các thủ tục nhân nuôi theo quy định của pháp luật. Nếu không có cô, rất có thể sức khỏe và tính mạng của em bé sẽ không được đảm bảo. Vậy, cô T đã đảm bảo quyền gì cho em bé?|||A. Quyền sống, được chăm sóc sức khỏe.|||B. Quyền có nơi ở hợp pháp.|||C. Quyền không bị phân biệt đối xử.|||D. Quyền được nuôi dưỡng.",
+        "Câu 16: Phát hiện H đang đi trên đường sau nhiều ngày trốn tránh về khoản nợ, N đã dung vũ lực bắt H về nhà mình nhốt lại và yêu cầu người nhà mang tiền đến trả. Sau khi nhận được tin báo, gia đình H đã tới công an trình báo sự việc vì N đã xâm phạm đến …. của H.|||A. quyền bất khả xâm phạm về thân thể.|||B. quyền bất khả xâm phạm về đời sống riêng tư.|||C. quyền được bảo hộ về danh dự, nhân phẩm.|||D. quyền được bảo hộ về tính mạng, sức khỏe.",
+        "Câu 17: Năm học vừa qua, M đạt thành tích cao trong học tập nên nghỉ hè được bố mẹ cho đi du lịch. Cả nhà cùng đi tham quan nhiều khu di tích, danh lam thắng cảnh của Việt Nam. Kết thúc chuyến đi, M đã viết bài chia sẻ những trải nghiệm của mình trên các trang báo mạng và nhận được sự phản hồi tích cực từ người đọc. Vậy, M đã thực hiện quyền|||A. quyền tự do ngôn luận.|||B. quyền tham gia quản lí nhà nước và xã hội.|||C. quyền được tự do đi lại.|||D. quyền tự do tiếp cận thông tin.",
+        "Câu 18: Nội dung về kinh tế được quy định tại các Điều từ 50 đến 56 của Hiến pháp năm 2013. Theo đó, nền kinh tế Việt Nam là nền kinh tế thị trường|||A. theo hướng tư bản chủ nghĩa.|||B. coi trọng phát triển nông nghiệp.|||C. gắn với hội nhập quốc tế.|||D. định hướng xã hội chủ nghĩa.",
+        "Câu 19: Theo quy định của Hiến pháp năm 2013, nền kinh tế Việt Nam là nền kinh tế thị trường định hướng xã hội chủ nghĩa với nhiều hình thức sở hữu, nhiều thành phần kinh tế,|||A. kinh tế tư nhân giữ vai trò chủ đạo.|||B. kinh tế nhà nước giữ vai trò chủ đạo.|||C. kinh tế tập thể giữ vai trò chủ đạo.|||D. kinh tế tư bản nhà nước là chủ đạo.",
+        "Câu 20: Theo quy định của Hiến pháp năm 2013, các chủ thể thuộc các thành phần kinh tế hoạt động theo pháp luật, bình đẳng trước pháp luật, hợp tác và|||A. cạnh tranh gay gắt.|||B. chia nhau lợi ích.|||C. cạnh tranh lành mạnh.|||D. mở rộng thị trường.",
+        "Câu 21: Theo quy định của Hiến pháp năm 2013, Đất đai, tài nguyên nước, khoáng sản, nguồn lợi ở vùng biển, vùng trời….và các tài sản do Nhà nước đầu tư, quản lí là|||A. tài sản công thuộc sở hữu toàn dân.|||B. tài sản công được khai thác tự do.|||C. tài sản của dân, do dân khai phá.|||D. tài sản công và chia đều cho nhân dân.",
+        "Câu 22: Theo quy định của Hiến pháp về vai trò, trách nhiệm của Nhà nước và xã hội trong các lĩnh vực văn hóa, xã hội là luôn tạo sự bình đẳng về cơ hội để công dân|||A. được làm việc theo sở thích.|||B. đóng góp thu nhập cho xã hội.|||C. thụ hưởng phúc lợi xã hội.|||D. làm chủ cuộc sống của mình.",
+        "Câu 23: Theo quy định của Hiến pháp năm 2013 ở Điều 60 về vai trò, trách nhiệm của Nhà nước và xã hội trong lĩnh vực văn hóa là luôn chăm lo xây dựng và phát triển nền văn hóa Việt Nam|||A. tiên tiến, đậm đà bản sắc dân tộc.|||B. tiến bộ để hội nhập với thế giới.|||C. theo mô hình của các nước tư bản.|||D. phát huy bản sắc văn hóa dân tộc.",
+        "Câu 24: Theo quy định của Hiến pháp năm 2013 ở Điều 60 về vai trò, trách nhiệm của Nhà nước và xã hội đối với lĩnh vực xã hội là|||A. xây dựng nền văn hóa tiên tiến.|||B. gìn giữ các giá trị văn hóa dân tộc.|||C. phát huy các truyền thống văn hóa.|||D. tạo việc làm cho người lao động.",
+        "Câu 25: Điều 61 Hiến pháp năm 2013 quy định: Phát triển giáo dục là quốc sách hàng đầu nhằm nâng cao dân trí, phát triển nguồn nhân lực và|||A. bồi dường nhân tài cho đất nước.|||B. hội nhập với nền kinh tế thế giới.|||C. tập trung phát triển kinh tế tri thức.|||D. đào tạo đội ngũ các nhà khoa học.",
+        "Câu 26: Điều 62 Hiến pháp năm 2013 khẳng định: Phát triển khoa học và công nghệ là quốc sách hàng đầu. Nhà nước bảo đảm quyền nghiên cứu khoa học và công nghệ; bảo hộ|||A. quyền tự do kinh doanh.|||B. quyền sở hữu trí tuệ.|||C. quyền tự do học tập.|||D. quyền sở hữu tài sản.",
+        "Câu 27: Tổ chức quyền lực chính trị của xã hội có giai cấp, có lãnh thổ, dân cư và chính quyền độc lập, có khả năng đặt ra và thực thi pháp luật nhằm thiết lập trật tự xã hội nhất định trong phạm vi lãnh thổ của mình được gọi là|||A. Quốc hội.|||B. Nhà nước.|||C. Chính phủ.|||D. Mặt trận tổ quốc Việt Nam.",
+        "Câu 28: Để thực hiện chức năng quản lí nhà nước và xã hội, Nhà nước ta đã thiết lập bộ máy nhà nước từ|||A. trung ương đến địa phương.|||B. trung ương đến cấp tỉnh.|||C. trung ương đến cấp huyện.|||D. tỉnh đến các xã, phường.",
+        "Câu 29: Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được tổ chức phân cấp phù hợp với các đơn vị hành chính đất nước và gồm 3 nhóm cơ quan tạo thành là|||A. cơ quan lập pháp, hành pháp, tư pháp.|||B. cơ quan lập pháp, lập hiến, tư pháp.|||C. cơ quan lập pháp, hành pháp, cơ quan ngang bộ.|||D. Quốc hội, Chính phủ và Ủy ban nhân dân.",
+        "Câu 30: Trong bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam, cơ quan nào sau đây là cơ quan đại biểu của nhân dân?|||A. Quốc hội và Ủy ban nhân dân.|||B. Quốc hội và Chính phủ.|||C. Quốc hội và Mặt trận tổ quốc.|||D. Quốc hội và Hội đồng nhân dân.",
+        "Câu 31: Tòa án nhân dân giữ vai trò gì trong bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam?|||A. Cơ quan xét xử, thực hiện quyền tư pháp.|||B. Cơ quan lập pháp, thực hiện quyền xét xử.|||C. Cơ quan tư pháp, thực hiện quyền công tố.|||D. Cơ quan xét xử, thực hiện quyền hành pháp.",
+        "Câu 32: Người đứng đầu Nhà nước, thay mặt nước Cộng hòa xã hội chủ nghĩa việt Nam về đối nội và đối ngoại là|||A. Chủ tịch quốc hội.|||B. Thủ tướng chính phủ.|||C. Chủ tịch hội đồng nhân dân.|||D. Chủ tịch nước.",
+        "Câu 33: Theo quy định tại Điều 107 của Hiến pháp. Viện kiểm sát nhân dân là cơ quan thực hành quyền công tố và|||A. điều tra trấn áp tội phạm.|||B. kiểm sát hoạt động tư pháp.|||C. xét xử các vụ án hình sự.|||D. giám sát hoạt động của Chính phủ.",
+        "Câu 34: Theo quy định của Hiến pháp năm 2013, Tổng Kiểm toán nhà nước chịu trách nhiệm và báo cáo kết quả kiểm toán, báo cáo công tác trước cơ quan nào?|||A. Quốc hội.|||B. Chính phủ.|||C. Chủ tịch nước.|||D. Tổng Bí thư.",
+        "Câu 35: Theo quy định của Hiến pháp năm 2013, Tổng Kiểm toán nhà nước chịu trách nhiệm và báo cáo kết quả kiểm toán, báo cáo công tác trước Quốc hội, trong thời gian Quốc hội không họp thì chịu trách nhiệm và báo cáo trước cơ quan nào sau đây?|||A. Ủy ban thường vụ Quốc hội.|||B. Viện kiểm sát nhân dân tối cao.|||C. Bộ và cơ quan ngang bộ.|||D. Văn phòng chính phủ.",
+        "Câu 36: Theo quy định của Hiến pháp năm 2013, Chủ tịch nước được bầu ra từ đâu?|||A. Trong số đại biểu Hội đồng nhân dân.|||B. Trong các Bộ và cơ quan ngang bộ.|||C. Trong các tổ chức Đảng.|||D. Trong số đại biểu Quốc hội.",
+        "Câu 37: Theo quy định của Hiến pháp năm 2013, bằng các hoạt động của mình, cơ quan nào sau đây đã đảm bảo pháp luật được thực thi nghiêm chỉnh, bảo vệ quyền con người và bảo vệ lợi ích hợp pháp của cá nhân, nhà nước và xã hội?|||A. Hội đồng nhân dân.|||B. Viện kiểm sát nhân dân.|||C. Bộ và cơ quan ngang bộ.|||D. Tòa án nhân dân.",
+        "Câu 38: Nhiệm vụ và quyền hạn của Quốc hội được quy định rất cụ thể trong Hiến pháp năm 2013, bao gồm những nhiệm vụ nào sau đây?|||A. Làm Hiến pháp và sửa đổi Hiến pháp.|||B. Kí kết hợp tác kinh tế với nước ngoài.|||C. Phê duyệt các văn bản của Chính phủ.|||D. Điều hành hoạt động của các địa phương.",
+        "Câu 39: Cơ quan quyền lực nhà nước cao nhất trong tổ chức bộ máy của nước cộng hòa xã hội chủ nghĩa Việt Nam là cơ quan nào dưới đây?|||A. Chính phủ.|||B. Bộ chính trị.|||C. Quốc hội.|||D. Mặt trận tổ quốc.",
+        "Câu 40: Quyền con người, quyền và nghĩa vụ cơ bản của công dân được Nhà nước quy định ở đâu?|||A. Chỉ thị, thông tư.|||B. Hiến pháp, luật pháp.|||C. Quyết định, chính sách.|||D. Nghị quyết, văn bản.",
+        "Câu 41: Hệ thống chính trị Việt Nam gồm nhiều cơ quan, tổ chức cấu thành và được liên kết chặt chẽ với nhau thành một chỉnh thể thống nhất nhằm thực thi|||A. quyền lực của nhà nước đối với nhân dân.|||B. quyền lực của giai cấp này với giai cấp khác.|||C. quyền làm chủ của nhân dân đối với đất nước.|||D. quyền lực của Đảng đối với toàn dân tộc.",
+        "Câu 42: Trong hệ thống chính trị Việt Nam, tổ chức đóng vai trò cầm quyền, lãnh đạo Nhà nước và xã hội là|||A. Quốc hội và Hội đồng nhân dân.|||B. Mặt trận tổ quốc Việt Nam.|||C. các tổ chức chính trị - xã hội.|||D. Đảng Cộng sản Việt Nam.",
+        "Câu 43: Nhà nước cộng hòa xã hội chủ nghĩa Việt Nam là công cụ tổ chức thực hiện ý chí và quyền lực của nhân dân, thay mặt nhân dân, chịu trách nhiệm trước nhân dân để quản lí|||A. toàn bộ hoạt động của đời sống xã hội.|||B. cán bộ và công nhân viên chức nhà nước.|||C. hoạt động của các thành phần kinh tế.|||D. việc khai thác và bảo vệ tài nguyên.",
+        "Câu 44: Mặt trận tổ quốc Việt Nam và các tổ chức chính trị - xã hội là các cơ quan, tổ chức đại diện, bảo vệ quyền và lợi ích hợp pháp, chính đáng của nhân dân, chăm lo lợi ích chính đáng của|||A. đội ngũ cán bộ công chức.|||B. những người dân tộc thiểu số.|||C. các đoàn viên và hội viên.|||D. những gia đình chính sách.",
+        "Câu 45: Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là|||A. quyền lực cao nhất thuộc về Chủ tịch nước.|||B. đảm bảo quyền lực của Đảng trong thực tiễn.|||C. quyền lực nhà nước thuộc về nhân dân.|||D. quyền lực cao nhất thuộc về Thủ tướng.",
+        "Câu 46: Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là|||A. đảm bảo sự lãnh đạo của Đảng.|||B. quyền lực thuộc về Chủ tịch nước.|||C. đảm bảo quyền lực của Đảng.|||D. quyền lực thuộc về Thủ tướng.",
+        "Câu 47: Một trong những nội dung thể hiện nguyên tắc tổ chức và hoạt động của hệ thống chính trị Việt Nam là|||A. lấy dân làm gốc.|||B. đoàn kết dân tộc.|||C. mở rộng đối ngoại.|||D. tập trung dân chủ.",
+        "Câu 48: Nguyên tắc hiến định trong tổ chức và hoạt động của bộ máy nhà nước Việt Nam là|||A. đảm bảo sự lãnh đạo của Đảng.|||B. đảm bảo sự lãnh đạo của Nhà nước.|||C. đảm bảo sự lãnh đạo của Quốc hội.|||D. đảm bảo sự lãnh đạo của Chính phủ.",
+        "Câu 49: Tính thống nhất của quyền lực nhà nước Việt Nam được xác định bởi chính chủ thể duy nhất và tối cao của quyền lực là|||A. Chính phủ.|||B. giai cấp cầm quyền.|||C. nhân dân.|||D. giai cấp thống trị.",
+        "Câu 50: Quyền lực nhà nước được phân chia thành quyền|||A. lập pháp, hành pháp, tư pháp.|||B. lập pháp, hành pháp, hiến pháp.|||C. lập pháp, tư pháp, hiến pháp.|||D. tư pháp, hành pháp, hiến pháp.",
+        "Câu 51: Nguyên tắc nào khẳng định nhân dân Việt Nam là người lập ra Nhà nước?|||A. Quyền lực nhà nước thuộc về nhân dân.|||B. Tập trung dân chủ.|||C. Đảm bảo sự lãnh đạo của Đảng.|||D. Pháp chế xã hội chủ nghĩa.",
+        "Câu 52: Nhà nước Công hòa xã hội chủ nghĩa Việt Nam quản lí xã hội bằng|||A. quyền lực của nhà nước.|||B. Hiến pháp và pháp luật.|||C. cơ cấu tổ chức bộ máy.|||D. lực lượng quân đội, công an.",
+        "Câu 53: Một trong những đặc điểm của bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam là|||A. tính toàn dân.|||B. tính quyền lực.|||C. tính giai cấp.|||D. tính dân chủ.",
+        "Câu 54: Một trong những đặc điểm của bộ máy nhà nước Công hòa xã hội chủ nghĩa Việt Nam là|||A. tính nhân dân.|||B. tính công bằng.|||C. tính toàn dân.|||D. tính dân chủ.",
+        "Câu 55: Nội dung nào dưới đây không phải là đặc điểm của bộ máy nhà nước Công hòa xã hội chủ nghĩa Việt Nam?|||A. Tính thống nhất.|||B. Tính dân chủ.|||C. Tính quyền lực.|||D. Tính nhân dân.",
+        "Câu 56: Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam được tổ chức và hoạt động trong sự phối kết hợp giữa các yếu tố|||A. dân chủ và tập trung.|||B. dân chủ và đại diện.|||C. dân chủ và trực tiếp.|||D. dân chủ và công khai.",
+        "Câu 57: Hệ thống các cơ quan trong bộ máy nhà nước được sắp xếp, tổ chức thống nhất từ|||A. trung ương xuống địa phương.|||B. trung ương xuống cấp tỉnh.|||C. trung ương xuống cấp huyện.|||D. trung ương xuống xã, phường.",
+        "Câu 58: Hệ thống các cơ quan trong bộ máy nhà nước được sắp xếp, tổ chức thống nhất từ trung ương xuống địa phương và đều chịu sự lãnh đạo của|||A. Chính phủ và Đảng ủy các cấp.|||B. Mặt trận tổ quốc Việt Nam.|||C. Đảng Cộng sản Việt Nam.|||D. Ủy ban nhân dân các cấp.",
+        "Câu 59: Bộ máy nhà nước Cộng hòa xã hội chủ nghĩa Việt Nam do|||A. nhân dân thành lập.|||B. nhà nước thành lập.|||C. Đảng cộng sản thành lập.|||D. giai cấp công nhân thành lập.",
+        "Câu 60: Mọi hoạt động của các cơ quan, cán bộ, công chức, viên chức trong bộ máy nhà nước chịu sự|||A. kiểm tra, giám sát của Đảng.|||B. kiểm tra, giám sát của nhân dân.|||C. kiểm tra, giám sát của Chính phủ.|||D. kiểm tra, giám sát của Ủy ban nhân dân.",
+        "Câu 61: Hội đồng nhân dân là|||A. cơ quan quyền lực nhà nước ở địa phương.|||B. cơ quan lãnh đạo ở địa phương.|||C. cơ quan hành chính ở địa phương.|||D. cơ quan giám sát ở địa phương.",
+        "Câu 62: Hội đồng nhân dân được thành lập thông qua|||A. bầu cử, ứng cử.|||B. mệnh lệnh cấp trên.|||C. phân bổ quyền lực.|||D. đặc trưng vùng miền.",
+        "Câu 63: Hội đồng nhân dân là cơ quan quyền lực nhà nước ở địa phương chịu trách nhiệm trước nhân dân địa phương và|||A. lãnh đạo địa phương.|||B. cơ quan cấp trên.|||C. người đứng đầu địa phương.|||D. đoàn thể ở địa phương",
+        "Câu 64: Hội đồng nhân dân địa phương không có thẩm quyền quyết định vấn đề nào dưới đây của địa phương?|||A. Giám sát tối cao hoạt động của Quốc hội.|||B. Giám sát hoạt động của Ủy ban nhân dân.|||C. Giám sát hoạt động của cơ quan hành chính.|||D. Giám sát vấn về an sinh xã hội tại địa bàn.",
+        "Câu 65: Hình thức quan trọng nhất trong hoạt động của Hội đồng nhân dân là|||A. Kỳ họp.|||B. Đại hội.|||C. Phong trào.|||D. Kế hoạch.",
+        "Câu 66: Cơ quan hành chính nhà nước ở địa phương là|||A. Hội đồng nhân dân.|||B. Ủy ban nhân dân.|||C. Mặt trận tổ quốc.|||D. Tòa án nhân dân.",
+        "Câu 67: Theo Luật tổ chức chính quyền địa phương, cơ quan có chức năng tổ chức việc thi hành Hiến pháp và pháp luật ở địa phương là|||A. Viện kiểm sát nhân dân.|||B. Tòa án nhân dân.|||C. Ủy Ban nhân dân.|||D. Hội đồng nhân dân.",
+        "Câu 68: Theo Luật tổ chức chính quyền địa phương, Ủy ban nhân dân chịu trách nhiệm trước hội đồng nhân dân cùng cấp và cơ quan hành chính|||A. cùng cấp.|||B. cấp trên.|||C. cấp dưới.|||D. đồng cấp.",
+        "Câu 69: Theo Luật tổ chức chính quyền địa phương, người đứng đầu Ủy ban nhân dân được gọi là|||A. Bí thư.|||B. Chủ tịch.|||C. Chánh án.|||D. Viện trưởng.",
+        "Câu 70: Uỷ ban nhân dân có chức năng:|||A. Quyết định các vấn đề của địa phương do luật định.|||B. Tổ chức thực hiện nghị quyết của Hội đồng nhân dân.|||C. Giám sát việc tuân theo Hiến pháp và pháp luật ở địa phương.|||D. Giám sát việc thực hiện nghị quyết của Hội đồng nhân dân.",
+        "Câu 72: Cơ cấu tổ chức UBND bao gồm những bộ phận nào?|||A. Chủ tịch, phó chủ tịch, các ủy viên phụ trách chuyên môn.|||B. Chủ tịch, phó chủ tịch.|||C. Các ủy viên phụ trách cơ quan chuyên môn.|||D. Ủy viên phụ trách công an, ủy viên phụ trách quân sự.",
+        "Câu 73: Mọi người đều bình đẳng trước pháp luật, không ai bị phân biệt đối xử trong đời sống chính trị, dân sự, kinh tế, văn hóa xã hội là nội dung cơ bản của Hiến pháp 2013 về|||A. quyền con người.|||B. nghĩa vụ công dân.|||C. trách nhiệm pháp lý.|||D. chế độ chính trị.",
+        "Câu 74: Công dân được tham gia bầu cử và ứng cử vào Quốc hội là thực hiện tốt quyền con người trên lĩnh vực nào dưới đây?|||A. Chính trị.|||B. Kinh tế.|||C. Văn hóa.|||D. Xã hội.",
+        "Câu 75: Theo quy định của pháp luật, mọi công dân nếu đủ điều kiện đều được tham quản lý nhà nước và xã hội là góp phần thực hiện tốt quyền con người trên lĩnh vực|||A. Chính trị.|||B. Dân sự|||C. Đối ngoại.|||D. Xã hội.",
+        "Câu 76: Theo quy định của Hiến pháp và pháp luật, nội dung nào dưới đây không thể hiện quyền bình đẳng của công dân trên lĩnh vực chính trị?|||A. ứng cử vào Quốc hội.|||B. Khiếu nại với cơ quan nhà nước.|||C. Tham gia quản lý nhà nước ở cơ sở.|||D. tự do cư trú và đi lại trong nước.",
+        "Câu 77: Theo quy định của Hiến pháp và pháp luật, nội dung nào dưới đây không thể hiện quyền bình đẳng của công dân trên lĩnh vực chính trị?|||A. bầu cử Hội đồng nhân dân các cấp.|||B. Khiếu nại khi quyền lợi bị xâm phạm.|||C. Tham gia quản lý nhà nước tại địa phương.|||D. lựa chọn việc làm phù hợp với năng lực.",
+        "Câu 78: Theo quy định của Hiến pháp 2013, một trong những quyền cơ bản của công dân trên lĩnh vực chính trị là quyền|||A. biểu quyết khi nhà nước trưng cầu dân ý.|||B. được đảm bảo an sinh xã hội.|||C. được làm việc cho bất kỳ ai.|||D. được sử dụng ngôn ngữ mẹ đẻ.",
+        "Câu 79: Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được|||A. ứng cử vào Hội đồng nhân dân|||B. pháp luật bảo hộ về tính mạng.|||C. bầu cử đại biểu Quốc hội.|||D. tự do lập hội, tự do đi lại.",
+        "Câu 80: Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được|||A. có nơi ở hợp pháp.|||B. ứng cử đại biểu Quốc hội.|||C. nghiên cứu khoa học.|||D. sáng tạo nghệ thuật",
+        "Câu 81: Theo quy định của Hiến pháp 2013, trên lĩnh vực dân sự, mọi công dân đều có quyền được|||A. tự do kinh doanh.|||B. tự do tín ngưỡng.|||C. khiếu nại, tố cáo.|||D. tự do ngôn luận.",
+        "Câu 82: Theo quy định của pháp luật, quyền bất khả xâm phạm về thân thể của công dân là một trong những nội dung cơ bản của quyền con người trên lĩnh vực|||A. chính trị.|||B. kinh tế.|||C. văn hóa.|||D. dân sự.",
+        "Câu 83: Vấn đề nào sau đây được xác định là động lực quan trọng thúc đẩy sự phát triển của đất nước ?|||A. Quốc phòng và an ninh.|||B. Khoa học và công nghệ.|||C. Văn hoá.|||D. Giáo dục và đào tạo.",
+        "Câu 84: Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?|||A. Sử dụng hợp lý tài nguyên|||B. Tăng cường nhập khẩu phế liệu.|||C. Chiếm hữu tài nguyên thiên nhiên.|||D. Mở rộng mô hình du canh du cư.",
+        "Câu 85: Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?|||A. Bảo tồn đa dạng sinh học.|||B. Khôi phục làng nghề truyền thống.|||C. Đốt rừng làm nương rẫy|||D. Mở rộng việc phủ xanh đồi trọc.",
+        "Câu 86: Theo quy định của Hiến pháp 2013, nội dung nào sau đây là một trong những mục tiêu của chính sách tài nguyên và bảo vệ môi trường ở nước ta?|||A. Nâng cao chất lượng môi trường.|||B. Xả thải trực tiếp ra môi trường.|||C. Phổ cập mô hình du canh du cư.|||D. Thu hẹp diện tích rừng để làm thủy điện.",
+        "Câu 87: Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?|||A. Áp dụng mô hình đối thoại trực tuyến.|||B. Chủ động xử lí công tác truyền thông.|||C. cần thức đẩy hiện tượng lạm phát.|||D. Hạn chế sử dụng nhiên liệu hóa thạch.",
+        "Câu 88: Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?|||A. Xả thải trực tiếp ra môi trường.|||B. Phân loại rác thải tại nguồn.|||C. Buôn bán hàng kém chất lượng.|||D. Làm giả nhãn hiệu hàng hóa.",
+        "Câu 89: Theo quy định của Hiến pháp 2013, việc làm nào sau đây thể hiện trách nhiệm của công dân trong việc thực hiện chính sách tài nguyên và bảo vệ môi trường?|||A. Sử dụng nhiên liệu tái tạo.|||B. kế hoạch phản biện xã hội.|||C. hưởng trợ cấp thất nghiệp.|||D. Làm giả hồ sơ bảo hiểm."
+    ];
+
+    // Bộ đáp án đầy đủ 88 câu
+    const answerKey = {
+        0: 'A', 1: 'D', 2: 'B', 3: 'C', 4: 'D', 5: 'A', 6: 'C', 7: 'B', 8: 'D', 9: 'B',
+        10: 'A', 11: 'B', 12: 'A', 13: 'A', 14: 'A', 15: 'A', 16: 'A', 17: 'D', 18: 'B', 19: 'C',
+        20: 'A', 21: 'C', 22: 'A', 23: 'D', 24: 'A', 25: 'B', 26: 'B', 27: 'A', 28: 'A', 29: 'D',
+        30: 'A', 31: 'D', 32: 'B', 33: 'A', 34: 'A', 35: 'D', 36: 'D', 37: 'A', 38: 'C', 39: 'B',
+        40: 'C', 41: 'D', 42: 'A', 43: 'C', 44: 'C', 45: 'A', 46: 'D', 47: 'A', 48: 'C', 49: 'A',
+        50: 'A', 51: 'B', 52: 'B', 53: 'A', 54: 'B', 55: 'A', 56: 'A', 57: 'C', 58: 'A', 59: 'B',
+        60: 'A', 61: 'A', 62: 'B', 63: 'A', 64: 'A', 65: 'B', 66: 'C', 67: 'B', 68: 'B', 69: 'B',
+        70: 'A', 71: 'A', 72: 'A', 73: 'A', 74: 'D', 75: 'D', 76: 'A', 77: 'B', 78: 'A', 79: 'B',
+        80: 'D', 81: 'B', 82: 'A', 83: 'A', 84: 'A', 85: 'D', 86: 'B', 87: 'A'
+    };
+
+    const container = document.getElementById('quiz-container');
+
+    // Hàm sinh giao diện bài trắc nghiệm
+    function renderQuiz() {
+        questionsData.forEach((dataBlock, index) => {
+            const parts = dataBlock.split("|||");
+            const questionText = parts[0];
+            const options = parts.slice(1);
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.id = `qcard-${index}`;
+
+            const qTitle = document.createElement('div');
+            qTitle.className = 'question-text';
+            qTitle.innerHTML = questionText;
+            card.appendChild(qTitle);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            options.forEach((optText, optIndex) => {
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.id = `label-q${index}-${optionLetters[optIndex]}`;
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question_${index}`;
+                radio.value = optionLetters[optIndex];
+
+                const span = document.createElement('span');
+                span.innerHTML = optText;
+
+                label.appendChild(radio);
+                label.appendChild(span);
+                optionsDiv.appendChild(label);
+            });
+
+            card.appendChild(optionsDiv);
+            container.appendChild(card);
+        });
+    }
+
+    // Hàm xử lý hiển thị đáp án và trạng thái hoàn thành
+    function calculateScore() {
+        let answered = 0;
+        const total = questionsData.length;
+
+        // Xóa class màu sắc trước đó nếu người dùng nộp nhiều lần
+        document.querySelectorAll('.option-label').forEach(el => {
+            el.classList.remove('correct-ans', 'wrong-ans');
+        });
+
+        questionsData.forEach((_, index) => {
+            const selectedOpt = document.querySelector(`input[name="question_${index}"]:checked`);
+            const correctAns = answerKey[index];
+
+            if (selectedOpt) {
+                answered++;
+                const userAns = selectedOpt.value;
+
+                if (userAns === correctAns) {
+                    // Trả lời đúng -> Bôi xanh đáp án đã chọn
+                    document.getElementById(`label-q${index}-${userAns}`).classList.add('correct-ans');
+                } else {
+                    // Trả lời sai -> Bôi đỏ đáp án đã chọn và bôi xanh đáp án đúng
+                    document.getElementById(`label-q${index}-${userAns}`).classList.add('wrong-ans');
+                    document.getElementById(`label-q${index}-${correctAns}`).classList.add('correct-ans');
+                }
+            } else {
+                // Nếu chưa trả lời, hiển thị đáp án đúng luôn
+                document.getElementById(`label-q${index}-${correctAns}`).classList.add('correct-ans');
+            }
+        });
+
+        const resultBox = document.getElementById('result-display');
+        resultBox.innerHTML = `Đã nộp bài! Đã làm: ${answered}/${total} câu`;
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Khởi tạo trang web
+    window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
